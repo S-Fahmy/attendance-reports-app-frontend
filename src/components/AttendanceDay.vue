@@ -1,6 +1,6 @@
 <template>
   <div class="container attendance-day-container">
-    <div class="columns has-text-centered" v-if="!absent">
+    <div class="columns has-text-centered" v-if="!isAbsent">
       <div class="column">
         <h5 class="text-bold">
           {{ formatDateStringYmdToDmy(attendanceDay.day) }}
@@ -52,7 +52,7 @@
             good: attendanceDay.has_or_owes > 0,
           }"
         >
-          {{ attendanceDay.has_or_owes }}  <span>minutes</span>
+          {{ attendanceDay.has_or_owes }} <span>minutes</span>
         </h5>
         <b-tooltip label="Edit this day" position="is-right" animated
           ><a class="edit-day"><img src="../assets/imgs/pencil.png" alt="" /></a
@@ -62,9 +62,9 @@
 
     <!-- absent day -->
 
-    <div class="columns absent-day" v-if="absent">
+    <div class="columns absent-day" v-if="isAbsent">
       <div class="column">
-        <h5 class="text-bold">{{ attendanceDay.day }}</h5>
+        <h5 class="text-bold">{{ absenceDay }}</h5>
       </div>
       <div class="column reason">
         <h5>{{ attendanceDay.absence_reason }}</h5>
@@ -87,24 +87,44 @@ export default {
   data() {
     return {
       attendanceDay: this.day,
+
       absent: false,
+      absenceDay: "",
     };
   },
 
   mounted: function () {
-    if (this.attendanceDay.absent) {
-      this.absent = true;
-    }
+    // if (this.attendanceDay.absent) {
+    //   console.log(this.day.day);
+    //   this.absenceDay = this.formatDateStringYmdToDmy(this.day.day);
+    //   this.absent = true;
+    // }
+  },
+
+  computed: {
+    isAbsent() {
+      if (this.attendanceDay.absent) {
+        return this.setAbsenceDay();
+      }
+
+      return false;
+    },
   },
 
   methods: {
+    //for computed method
+    setAbsenceDay() {
+      this.absenceDay = this.formatDateStringYmdToDmy(this.day.day);
+      return true;
+    },
+
     formatDateStringYmdToDmy: function (date) {
       return moment(date, "YYYY-MM-DD").format("D/M/YYYY");
     },
 
     formatTimeString24toAmPm: function (time) {
-      if(!moment(time, "HH:mm:ss").isValid()){
-        return "No time."
+      if (!moment(time, "HH:mm:ss").isValid()) {
+        return "No time.";
       }
       return moment(time, "HH:mm:ss").format("h:mm a");
     },
@@ -156,7 +176,7 @@ export default {
   color: #4b4848;
 }
 
-.attendance-day-container h5 span{
+.attendance-day-container h5 span {
   font-size: 0.7rem !important;
   font-weight: 400 !important;
 }

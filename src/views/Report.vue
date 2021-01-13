@@ -19,7 +19,12 @@
 
                 <img class="" src="../assets/imgs/Arrow 1.png" alt="" />
               </button>
-
+              <b-dropdown-item class="loading" v-show="empsLoading">
+                <b-loading
+                  :is-full-page="false"
+                  v-model="empsLoading"
+                ></b-loading
+              ></b-dropdown-item>
               <div v-for="employee in employees" :key="employee.id">
                 <b-dropdown-item
                   :value="employee.name"
@@ -45,21 +50,32 @@
               :max-date="maxDate"
               range
               editable
+              icon-next=""
+              icon-prev=""
               @input="dateFormatter"
             >
             </b-datepicker>
             <b-button
               class="calendar-icon"
               @click="$refs.datepicker.toggle()"
-              icon-pack="fas"
-              icon-left="calendar"
-            />
+              type="is-light"
+            >
+              <img src="../assets/imgs/calendar.png" alt="" />
+            </b-button>
           </b-field>
         </div>
 
         <div class="column has-text-right btn-col">
-          <b-button class="calc-btn" type="" @click="fetchReport"
+          <b-button
+            class="calc-btn"
+            type=""
+            @click="fetchReport"
+            v-show="!isLoading"
             >Calculate</b-button
+          >
+
+          <b-button loading v-show="isLoading" class="calc-btn"
+            >Loading</b-button
           >
         </div>
       </div>
@@ -70,7 +86,11 @@
       :summary="getReportWithoutAttendancesData()"
     ></report-summary>
 
-    <report-table class="tble" v-if="isAttendanceDataNotEmpty" :attendancesDays="getAttendanceDays()"></report-table>
+    <report-table
+      class="tble"
+      v-if="isAttendanceDataNotEmpty"
+      :attendancesDays="getAttendanceDays()"
+    ></report-table>
   </div>
 </template>
 
@@ -92,6 +112,8 @@ export default {
       dateStart: "",
       dateEnd: "",
       attendancesData: {},
+      isLoading: false,
+      empsLoading: false,
     };
   },
 
@@ -129,38 +151,61 @@ export default {
     },
 
     getReportWithoutAttendancesData: function () {
-      
-        this.summaryData = cloneDeep(this.attendancesData);
-        delete this.summaryData["report"]["attendances"];
-        return this.summaryData;
-      
+      this.summaryData = cloneDeep(this.attendancesData);
+      delete this.summaryData["report"]["attendances"];
+      return this.summaryData;
     },
 
     getAttendanceDays: function () {
-      
-        return this.attendancesData.report.attendances;
-      
+      return this.attendancesData.report.attendances;
     },
 
     fetchEmployees: function () {
+      this.empsLoading = true;
+
       if (this.employees.length == 0) {
         axios
           .get("https://attendance-reports-app.herokuapp.com/employees")
-          .then((response) => (this.employees = response.data.employees));
+          .then((response) => (this.employees = response.data.employees))
+          .then(setTimeout(() => (this.empsLoading = false), 500));
+      }else{
+        this.empsLoading = false; 
       }
     },
 
     fetchReport: function () {
-      axios
-        .get(
-          "https://attendance-reports-app.herokuapp.com/employees/" +
-            this.selectedEmployeeId +
-            "/attendances?schedule=true&start_date=" +
-            this.dateStart +
-            "&end_date=" +
-            this.dateEnd
-        )
-        .then((response) => (this.attendancesData = response.data));
+      if (this.selectedEmployeeId != 0 && this.dateStart !="" && this.dateEnd != "") {
+        this.isLoading = true;
+        axios
+          .get(
+            "https://attendance-reports-app.herokuapp.com/employees/" +
+              this.selectedEmployeeId +
+              "/attendances?schedule=true&start_date=" +
+              this.dateStart +
+              "&end_date=" +
+              this.dateEnd
+          )
+          .then((response) => (this.attendancesData = response.data))
+          .then(setTimeout(() => (this.isLoading = false), 500));
+
+
+      } else if(this.selectedEmployeeId == 0 && this.dateStart != ""){
+        this.$buefy.toast.open({
+          message: "Select an employee to proceed",
+          type: "is-danger",
+        });
+
+      }else if(this.dateStart == "" && this.selectedEmployeeId != 0){
+        this.$buefy.toast.open({
+          message: "Select dates to proceed",
+          type: "is-danger",
+        });
+      }else{
+        this.$buefy.toast.open({
+          message: "You didn't select any data yet",
+          type: "is-danger",
+        });
+      }
     },
   },
 };
@@ -230,10 +275,25 @@ $datepicker-header-color: #4b4848;
   border-bottom: none;
 }
 
+::v-deep .datepicker .datepicker-header .pagination-previous,
+::v-deep .datepicker .datepicker-header .pagination-next {
+  padding: 0px;
+}
+
 ::v-deep .datepicker .datepicker-header .pagination-previous span,
 ::v-deep .datepicker .datepicker-header .pagination-next span {
   color: $primary !important;
-  width: 50%;
+  // width: 50%;
+
+  background-image: url("../assets/imgs/prev.png");
+}
+
+::v-deep .datepicker .datepicker-header .pagination-previous span {
+  background-image: url("../assets/imgs/prev.png");
+}
+
+::v-deep .datepicker .datepicker-header .pagination-next span {
+  background-image: url("../assets/imgs/next.png");
 }
 
 .is-primary img {
@@ -275,6 +335,16 @@ $datepicker-header-color: #4b4848;
   border-radius: 0;
   margin-top: 5px;
 }
+.loading {
+  padding: 20px;
+}
+.loading ::v-deep.loading-overlay .loading-background {
+  background: white !important;
+}
 
-
+.loading ::v-deep.loading-overlay .loading-icon::after {
+  height: 1em !important;
+  width: 1em !important;
+  left: -9px !important;
+}
 </style>

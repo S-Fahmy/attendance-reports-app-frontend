@@ -1,15 +1,18 @@
 <template>
   <div class="schedule-container">
     <div class="columns">
-      <div class="column is-2 is-offset-4">
+      <div class="column is-2 is-offset-3">
         <h1>
           Schedule title:
+          </h1>
+      </div>
+      <div class="column is-2">
           <b-input
             placeholder="name"
             validation-message="enter a suitable name"
             v-model="newSchedule.title"
           ></b-input>
-        </h1>
+        
       </div>
     </div>
 

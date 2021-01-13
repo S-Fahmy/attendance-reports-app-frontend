@@ -1,17 +1,25 @@
 <template>
   <div class="schedule-container">
     <div class="columns">
-      <div class="column is-2 is-offset-4">
-        <h1>
-          Schedule: <span>{{ sch.title }}</span>
-        </h1>
+      <div class="column is-2 is-offset-3">
+        <h1>Schedule:</h1>
       </div>
+      <div class="column is-2">
+        <b-input
+          placeholder="name"
+          validation-message="enter a suitable name"
+          v-model="sch.title"
+        ></b-input>
+      </div>
+
       <div class="column">
         <b-button type="is-text" size="small" @click="confirmEdit"
-          ><img src="@/assets/imgs/check.png" alt=""></b-button>
+          ><img src="@/assets/imgs/check.png" alt=""
+        /></b-button>
 
         <b-button class="edit-btns" type="is-text" size="" @click="cancelEdit"
-          ><img src="@/assets/imgs/cancel.png" alt=""></b-button >
+          ><img src="@/assets/imgs/cancel.png" alt=""
+        /></b-button>
       </div>
     </div>
     <div class="columns schedule-body">
@@ -67,9 +75,8 @@
                 validation-message="Enter a valid number of minutes between 0-120 minutes."
                 v-model.number="sch.allowed_early_leave"
               >
-              
               </b-input>
-            </b-field> 
+            </b-field>
           </div>
         </div>
 
@@ -140,7 +147,14 @@
       <div class="column last-col">
         <div class="columns">
           <div class="column is-4 px-0">
-            <h5>Assign to:</h5>
+            <h5>
+              Assign to:
+              <b-tooltip label="Un/Select all employees" type="is-dark">
+                <b-button type="is-text" size="small" @click="selectAllEmps"
+                  ><img src="../assets/imgs/plus.png" alt=""
+                /></b-button>
+              </b-tooltip>
+            </h5>
           </div>
           <div class="column px-0 py-0">
             <ul>
@@ -177,7 +191,7 @@ export default {
   props: {
     schedule: Object,
     allemployees: Array,
-    timeNow: Date
+    timeNow: Date,
   },
   data() {
     return {
@@ -195,13 +209,18 @@ export default {
       missing_check_penalty_choice: "",
       isTimePenalty: false,
       timePenalty: 0,
+
+      allEmpsSelected: false,
     };
   },
 
   computed: {
     timeDiff: function () {
-      if(this.shift_begins != null){
-       return ((this.shift_ends.getTime() - this.shift_begins.getTime()) /(1000 * 60 * 60));
+      if (this.shift_begins != null) {
+        return (
+          (this.shift_ends.getTime() - this.shift_begins.getTime()) /
+          (1000 * 60 * 60)
+        );
       }
 
       return 0;
@@ -281,8 +300,23 @@ export default {
       }
 
       axios
-        .patch("https://attendance-reports-app.herokuapp.com/schedules", { data: this.sch })
+        .patch("https://attendance-reports-app.herokuapp.com/schedules", {
+          data: this.sch,
+        })
         .then((response) => this.$emit("editedDone", response.data.schedule));
+    },
+
+    selectAllEmps() {
+      if (!this.allEmpsSelected) {
+        this.employees.forEach((emp) => {
+          this.selectedEmployeesIds.push(emp.id);
+        });
+        this.allEmpsSelected = true;
+      } else {
+        // i want to deselect all
+        this.selectedEmployeesIds.splice(0, this.selectedEmployeesIds.length);
+        this.allEmpsSelected = false;
+      }
     },
 
     cancelEdit: function () {

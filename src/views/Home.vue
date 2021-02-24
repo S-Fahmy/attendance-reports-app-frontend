@@ -1,15 +1,43 @@
 <template>
   <div class="home container">
-    <div class="columns is-multiline ">
-      <div class="column is-4-desktop is-12-tablet has-text-centered-tablet has-text-left-desktop">
+    <div class="columns">
+      <div class="column">
+        <div v-if="!$auth.loading">
+                 <!-- show login when not authenticated -->
+          <b-button v-if="!$auth.isAuthenticated" type="is-info" @click="login">Log in/ Register</b-button>
+          <!-- show logout when authenticated -->
+          <b-button v-if="$auth.isAuthenticated" type="is-info" @click="logout"
+            >Log out</b-button
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-multiline">
+      <div
+        class="column is-4-desktop is-12-tablet has-text-centered-tablet has-text-left-desktop"
+      >
         <h1>Welcome...</h1>
         <h2>What do you need to do?</h2>
       </div>
+      <!-- <div v-if="!$auth.loading">
+        <div
+          v-if="!$auth.isAuthenticated"
+          class="column left-tile is-3-desktop is-offset-2-tablet is-4-tablet"
+        >
+          <b-button type="is-info" @click="login">Log in/ Register</b-button>
+        </div>
+      </div> -->
 
-      <div class="column left-tile is-3-desktop is-offset-2-tablet is-4-tablet">
+      <div
+        class="column left-tile is-3-desktop is-offset-2-tablet is-4-tablet"
+        v-if="$auth.isAuthenticated"
+      >
         <div class="columns is-multiline">
           <div class="column is-12">
-            <b-button type="is-info" tag="router-link" to="/Report">Calculate an Employee Report</b-button>
+            <b-button type="is-info" tag="router-link" to="/Report"
+              >Calculate an Employee Report</b-button
+            >
           </div>
           <div class="column is-12 bottom-btns">
             <b-button tag="router-link" to="/schedules" type="is-info">
@@ -18,11 +46,11 @@
           </div>
         </div>
       </div>
-      <div class="column is-3-desktop is-4-tablet">
+      <div class="column is-3-desktop is-4-tablet" v-if="$auth.isAuthenticated">
         <div class="columns is-multiline">
           <div class="column is-12">
             <b-button type="is-info">View Employees</b-button>
-          </div>  
+          </div>
           <div class="column is-12 bottom-btns">
             <b-button class="" type="is-info "
               >Import data from fingerprint machine</b-button
@@ -43,6 +71,18 @@ export default {
   components: {
     // HelloWorld
   },
+  methods: {
+    // Log the user in
+    login() {
+      this.$auth.loginWithRedirect();
+    },
+    // Log the user out
+    logout() {
+      this.$auth.logout({
+        returnTo: window.location.origin,
+      });
+    },
+  },
 };
 </script>
 
@@ -53,8 +93,8 @@ export default {
   right: 0;
   left: 0;
   top: 45%;
-  display: flex;
-  justify-content: center;
+  /* display: flex;
+  justify-content: center; */
   align-items: center;
   /* max-width: 75% !important; */
 }

@@ -22,6 +22,9 @@
           Schedules
         </b-navbar-item>
         <b-navbar-item href="#"> Employees </b-navbar-item>
+        <b-navbar-item v-if="$auth.isAuthenticated" @click="logout"
+          >Log out</b-navbar-item
+        >
       </template>
     </b-navbar>
 
@@ -53,6 +56,7 @@ export default {
     },
 
     onSchedules() {
+ 
       return this.$route.name === "Schedules";
     },
 
@@ -60,12 +64,19 @@ export default {
       return this.$route.name;
     },
   },
+  methods: {
+    // Log the user out
+    logout() {
+      this.$auth.logout({
+        returnTo: window.location.origin,
+      });
+    },
+  },
 };
 </script>
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
 
 html {
   height: 100%;
@@ -94,11 +105,11 @@ body {
   color: #4b4848;
 }
 
-.mainBar a.navbar-item:hover{
+.mainBar a.navbar-item:hover {
   color: #4b4848;
 }
 
-.mainBar a.navbar-item:focus{
+.mainBar a.navbar-item:focus {
   color: #4b4848;
 }
 

@@ -133,19 +133,27 @@ export default {
     },
 
     remove() {
-
       //buefy dialog
-      
+
       this.$buefy.dialog.confirm({
         title: "Removing schedule",
         message: "Are you sure?",
         confirmText: "Remove",
         type: "is-danger",
         hasIcon: true,
-        onConfirm: () =>
-          axios
-            .delete("https://attendance-reports-app.herokuapp.com/schedules/" + this.sch.id)
-            .then(this.$emit("deleted", this.sch.id)),
+        onConfirm: () => {
+          this.$auth.getTokenSilently().then((token) => {
+            const headers = { headers: { Authorization: `Bearer ${token}` } };
+
+            axios
+              .delete(
+                "https://attendance-reports-app.herokuapp.com/schedules/" +
+                  this.sch.id,
+                headers
+              )
+              .then(this.$emit("deleted", this.sch.id));
+          });
+        },
       });
     },
 

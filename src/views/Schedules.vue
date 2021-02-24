@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <b-button class="add-schedule" size="" @click="newSchedule" :icon-left="iconName">
+    <b-button
+      class="add-schedule"
+      size=""
+      @click="newSchedule"
+      :icon-left="iconName"
+    >
       {{ getAddBtnText }}
     </b-button>
     <b-button
@@ -12,7 +17,14 @@
     >
       Add
     </b-button>
-    <b-button class="view-holidays" size=""  tag="router-link" :to="{ path: '/holidays' }"> View Holidays </b-button>
+    <b-button
+      class="view-holidays"
+      size=""
+      tag="router-link"
+      :to="{ path: '/holidays' }"
+    >
+      View Holidays
+    </b-button>
     <div
       v-if="schedules.length > 0 || addingSchedule"
       class="schedules-wrapper"
@@ -60,25 +72,27 @@ export default {
       return "Add Schedule";
     },
 
-    iconName(){
-      if(this.addingSchedule){
-        return 'minus-circle';
+    iconName() {
+      if (this.addingSchedule) {
+        return "minus-circle";
       }
 
-      return 'plus-circle';
-    }
+      return "plus-circle";
+    },
   },
 
   mounted: function () {
-    axios
-      .get("https://attendance-reports-app.herokuapp.com/schedules")
-      .then((response) => (this.schedules = response.data.schedules));
+    this.$auth.getTokenSilently().then((token) => {
+      const headers = { headers: { Authorization: `Bearer ${token}` } };
 
-    console.log("schedules loaded");
+      axios
+        .get("https://attendance-reports-app.herokuapp.com/schedules", headers)
+        .then((response) => (this.schedules = response.data.schedules));
 
-    axios
-      .get("https://attendance-reports-app.herokuapp.com/employees")
-      .then((response) => (this.employees = response.data.employees));
+      axios
+        .get("https://attendance-reports-app.herokuapp.com/employees", headers)
+        .then((response) => (this.employees = response.data.employees));
+    });
   },
 
   methods: {

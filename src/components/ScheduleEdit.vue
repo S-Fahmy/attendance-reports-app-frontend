@@ -298,12 +298,19 @@ export default {
         //"A" or "0"
         this.sch.missing_check_penalty = this.missing_check_penalty_choice;
       }
+      this.$auth.getTokenSilently().then((token) => {
+        const headers = { headers: { Authorization: `Bearer ${token}` } };
 
-      axios
-        .patch("https://attendance-reports-app.herokuapp.com/schedules", {
-          data: this.sch,
-        })
-        .then((response) => this.$emit("editedDone", response.data.schedule));
+        axios
+          .patch(
+            "https://attendance-reports-app.herokuapp.com/schedules",
+            {
+              data: this.sch,
+            },
+            headers
+          )
+          .then((response) => this.$emit("editedDone", response.data.schedule));
+      });
     },
 
     selectAllEmps() {

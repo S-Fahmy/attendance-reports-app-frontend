@@ -133,7 +133,7 @@ export default {
 
     dateFormatter: function () {
       //m-d-y
-      //sure there could have been other ways to do this but i cba reading through javascript cancerous hell.
+      //there can be better ways to format dates.
 
       this.monthStart = this.dates[0].getMonth() + 1;
       this.dayStart = this.dates[0].getDate();
@@ -164,43 +164,57 @@ export default {
       this.empsLoading = true;
 
       if (this.employees.length == 0) {
-        axios
-          .get("https://attendance-reports-app.herokuapp.com/employees")
-          .then((response) => (this.employees = response.data.employees))
-          .then(setTimeout(() => (this.empsLoading = false), 500));
-      }else{
-        this.empsLoading = false; 
+        this.$auth.getTokenSilently().then((token) => {
+          const headers = { headers: { Authorization: `Bearer ${token}` } };
+
+          axios
+            .get(
+              "https://attendance-reports-app.herokuapp.com/employees",
+              headers
+            )
+            .then((response) => (this.employees = response.data.employees))
+            .then(setTimeout(() => (this.empsLoading = false), 500));
+        });
+      } else {
+        this.empsLoading = false;
       }
     },
 
     fetchReport: function () {
-      if (this.selectedEmployeeId != 0 && this.dateStart !="" && this.dateEnd != "") {
+      if (
+        this.selectedEmployeeId != 0 &&
+        this.dateStart != "" &&
+        this.dateEnd != ""
+      ) {
         this.isLoading = true;
-        axios
-          .get(
-            "https://attendance-reports-app.herokuapp.com/employees/" +
-              this.selectedEmployeeId +
-              "/attendances?schedule=true&start_date=" +
-              this.dateStart +
-              "&end_date=" +
-              this.dateEnd
-          )
-          .then((response) => (this.attendancesData = response.data))
-          .then(setTimeout(() => (this.isLoading = false), 500));
 
+        this.$auth.getTokenSilently().then((token) => {
+          const headers = { headers: { Authorization: `Bearer ${token}` } };
 
-      } else if(this.selectedEmployeeId == 0 && this.dateStart != ""){
+          axios
+            .get(
+              "https://attendance-reports-app.herokuapp.com/employees/" +
+                this.selectedEmployeeId +
+                "/attendances?schedule=true&start_date=" +
+                this.dateStart +
+                "&end_date=" +
+                this.dateEnd,
+              headers
+            )
+            .then((response) => (this.attendancesData = response.data))
+            .then(setTimeout(() => (this.isLoading = false), 500));
+        });
+      } else if (this.selectedEmployeeId == 0 && this.dateStart != "") {
         this.$buefy.toast.open({
           message: "Select an employee to proceed",
           type: "is-danger",
         });
-
-      }else if(this.dateStart == "" && this.selectedEmployeeId != 0){
+      } else if (this.dateStart == "" && this.selectedEmployeeId != 0) {
         this.$buefy.toast.open({
           message: "Select dates to proceed",
           type: "is-danger",
         });
-      }else{
+      } else {
         this.$buefy.toast.open({
           message: "You didn't select any data yet",
           type: "is-danger",

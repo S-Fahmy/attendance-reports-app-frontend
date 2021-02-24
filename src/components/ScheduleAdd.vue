@@ -2,17 +2,14 @@
   <div class="schedule-container">
     <div class="columns">
       <div class="column is-2 is-offset-3">
-        <h1>
-          Schedule title:
-          </h1>
+        <h1>Schedule title:</h1>
       </div>
       <div class="column is-2">
-          <b-input
-            placeholder="name"
-            validation-message="enter a suitable name"
-            v-model="newSchedule.title"
-          ></b-input>
-        
+        <b-input
+          placeholder="name"
+          validation-message="enter a suitable name"
+          v-model="newSchedule.title"
+        ></b-input>
       </div>
     </div>
 
@@ -283,10 +280,18 @@ export default {
       //format the times to 24hrs string format before sending them to the api.
       this.formatTheTimes();
 
-      //here i can emit with either with the local object i just added here or the shcedule object i get from the response.
-      axios
-        .post("https://attendance-reports-app.herokuapp.com/schedules", this.newSchedule)
-        .then((response) => this.$emit("added", response.data.schedule));
+      this.$auth.getTokenSilently().then((token) => {
+        const headers = { headers: { Authorization: `Bearer ${token}` } };
+
+        //here i can emit with either with the local object i just added here or the shcedule object i get from the response.
+        axios
+          .post(
+            "https://attendance-reports-app.herokuapp.com/schedules",
+            this.newSchedule,
+            headers
+          )
+          .then((response) => this.$emit("added", response.data.schedule));
+      });
     },
 
     formatTheTimes() {

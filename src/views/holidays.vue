@@ -43,9 +43,13 @@ export default {
   },
 
   mounted() {
-    axios
-      .get("https://attendance-reports-app.herokuapp.com/holidays")
-      .then((response) => (this.holidays = response.data.holidays));
+    this.$auth.getTokenSilently().then((token) => {
+      const headers = { headers: { Authorization: `Bearer ${token}` } };
+
+      axios
+        .get("https://attendance-reports-app.herokuapp.com/holidays", headers)
+        .then((response) => (this.holidays = response.data.holidays));
+    });
   },
 };
 </script>

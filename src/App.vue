@@ -21,8 +21,9 @@
         >
           Schedules
         </b-navbar-item>
-        <b-navbar-item href="#"> Employees </b-navbar-item>
-        <b-navbar-item v-if="$auth.isAuthenticated" @click="logout"
+        
+        <b-navbar-item href="#"> <b-tooltip position = "is-bottom" label="component unavailable on the demo version" type="is-dark"> Employees </b-tooltip></b-navbar-item>
+        <b-navbar-item v-if="$auth.isAuthenticated" class="logoutbtn" @click="logout"
           >Log out</b-navbar-item
         >
       </template>
@@ -32,6 +33,11 @@
       <template slot="start">
         <b-navbar-item class="main_title"
           >IST Industries Attendance App</b-navbar-item
+        >
+
+        <!-- show logout when authenticated -->
+        <b-navbar-item v-if="$auth.isAuthenticated"  @click="logout" class="logoutbtn"
+          >Log out</b-navbar-item
         >
       </template>
     </b-navbar>
@@ -56,7 +62,6 @@ export default {
     },
 
     onSchedules() {
- 
       return this.$route.name === "Schedules";
     },
 
@@ -130,5 +135,11 @@ h3 {
 
   color: #4b4848 !important;
   margin-bottom: 50px !important;
+}
+
+.logoutbtn{
+  color: #358ef1 !important;
+  font-size: 12px !important;
+  margin-left: 50px;
 }
 </style>

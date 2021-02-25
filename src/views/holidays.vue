@@ -2,10 +2,23 @@
   <div class="container is-max-desktop">
     <div class="columns my-6 is-multiline">
       <div class="column is-3 mx-5">
-        <b-button type="">Resync with google Calendar</b-button>
+        <b-tooltip
+          position="is-bottom"
+          label="component unavailable on the demo version"
+          type="is-dark"
+        >
+          <b-button type="">Resync with google Calendar</b-button>
+        </b-tooltip>
       </div>
+
       <div class="column">
-        <b-button type="">Manually add holiday</b-button>
+        <b-tooltip
+          position="is-bottom"
+          label="component unavailable on the demo version"
+          type="is-dark"
+        >
+          <b-button type="">Manually add holiday</b-button>
+        </b-tooltip>
       </div>
     </div>
     <div class="holidays-wrapper">

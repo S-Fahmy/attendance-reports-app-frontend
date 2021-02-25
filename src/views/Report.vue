@@ -38,31 +38,38 @@
         </div>
 
         <div class="column is-5">
-          <b-field>
-            <p>Select The Dates:</p>
+          <b-tooltip
+            position="is-top"
+            label="demo version data: some employees have records until 2020 but its preferred to test with dates between 2017&18."
+            type="is-info"
+          >
+            <b-field>
+              <p>Select The Dates:</p>
 
-            <b-datepicker
-              ref="datepicker"
-              placeholder="d/m/y"
-              locale="en-GB"
-              v-model="dates"
-              :min-date="minDate"
-              :max-date="maxDate"
-              range
-              editable
-              icon-next=""
-              icon-prev=""
-              @input="dateFormatter"
-            >
-            </b-datepicker>
-            <b-button
-              class="calendar-icon"
-              @click="$refs.datepicker.toggle()"
-              type="is-light"
-            >
-              <img src="../assets/imgs/calendar.png" alt="" />
-            </b-button>
-          </b-field>
+              <b-datepicker
+                ref="datepicker"
+                placeholder="d/m/y"
+                locale="en-GB"
+                v-model="dates"
+                :min-date="minDate"
+                :max-date="maxDate"
+                range
+                editable
+                icon-next=""
+                icon-prev=""
+                @input="dateFormatter"
+              >
+              </b-datepicker>
+
+              <b-button
+                class="calendar-icon"
+                @click="$refs.datepicker.toggle()"
+                type="is-light"
+              >
+                <img src="../assets/imgs/calendar.png" alt="" />
+              </b-button>
+            </b-field>
+          </b-tooltip>
         </div>
 
         <div class="column has-text-right btn-col">
@@ -107,7 +114,7 @@ export default {
       selectedEmployeeId: 0,
       employees: [],
       minDate: new Date(2016, 5, 1),
-      maxDate: new Date(),
+      maxDate: new Date(2020, 2, 1),
       dates: [],
       dateStart: "",
       dateEnd: "",

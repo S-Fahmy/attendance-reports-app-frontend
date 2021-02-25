@@ -1,19 +1,24 @@
 <template>
-  <div class="home container">
-    <div class="columns">
-      <div class="column">
-        <div v-if="!$auth.loading">
-                 <!-- show login when not authenticated -->
-          <b-button v-if="!$auth.isAuthenticated" type="is-info" @click="login">Log in/ Register</b-button>
-          <!-- show logout when authenticated -->
-          <b-button v-if="$auth.isAuthenticated" type="is-info" @click="logout"
-            >Log out</b-button
+  <div v-if="!$auth.loading" class="home container">
+    <div v-if="!$auth.isAuthenticated" class="columns is-multiline">
+      <div class="column is-12">
+        <h1>Welcome!</h1>
+      </div>
+      <div class="column is-11 is-offset-1">
+        <!-- show login when not authenticated -->
+        <b-tooltip
+          position="is-bottom"
+          label="Demo version credentials: you can register or use the default uname: test@test.com | pswd: Test12345"
+          type="is-info"
+        >
+          <b-button v-if="!$auth.isAuthenticated" type="is-info" @click="login"
+            >Log in/ Register</b-button
           >
-        </div>
+        </b-tooltip>
       </div>
     </div>
 
-    <div class="columns is-multiline">
+    <div v-if="$auth.isAuthenticated" class="columns is-multiline">
       <div
         class="column is-4-desktop is-12-tablet has-text-centered-tablet has-text-left-desktop"
       >
@@ -49,12 +54,22 @@
       <div class="column is-3-desktop is-4-tablet" v-if="$auth.isAuthenticated">
         <div class="columns is-multiline">
           <div class="column is-12">
-            <b-button type="is-info">View Employees</b-button>
+            <b-tooltip
+              label="component unavailable on the demo version"
+              type="is-dark"
+            >
+              <b-button type="is-info">View Employees</b-button>
+            </b-tooltip>
           </div>
           <div class="column is-12 bottom-btns">
-            <b-button class="" type="is-info "
-              >Import data from fingerprint machine</b-button
+            <b-tooltip
+              label="component unavailable on the demo version"
+              type="is-dark"
             >
+              <b-button class="" type="is-info "
+                >Import data from fingerprint machine</b-button
+              >
+            </b-tooltip>
           </div>
         </div>
       </div>
@@ -76,12 +91,12 @@ export default {
     login() {
       this.$auth.loginWithRedirect();
     },
-    // Log the user out
-    logout() {
-      this.$auth.logout({
-        returnTo: window.location.origin,
-      });
-    },
+    // // Log the user out
+    // logout() {
+    //   this.$auth.logout({
+    //     returnTo: window.location.origin,
+    //   });
+    // },
   },
 };
 </script>
@@ -93,8 +108,8 @@ export default {
   right: 0;
   left: 0;
   top: 45%;
-  /* display: flex;
-  justify-content: center; */
+  display: flex;
+  justify-content: center;
   align-items: center;
   /* max-width: 75% !important; */
 }
